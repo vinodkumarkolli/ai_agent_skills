@@ -120,10 +120,10 @@ There are three primary document states that define the status of the entire pro
 When maintaining or extending this flow, ensure compliance with these components:
 
 * **Server-Side Hooks & Validation**:
-  * **Event Handlers**: Implemented in [popr_utils.py](file:///workspace/development/frappe-bench/apps/swift_fix/swift_fix/setup/popr_utils.py). Handles `on_po_submit`, `on_pr_submit`, and `on_asset_capitalization_submit`.
+  * **Event Handlers**: Implemented in [popr_utils.py](file:///workspace/development/frappe-bench/apps/swift_fix/swift_fix/setup/popr_utils.py). Handles hooks and validations such as `on_po_submit`, `on_pr_submit`, `on_asset_capitalization_submit`, `generate_asset_qr`, `create_purchase_receipt_serial_nos`, and `check_purchase_invoice_capitalization`.
   * **RFQ Validation**: Located in [rfq_update.py](file:///workspace/development/frappe-bench/apps/swift_fix/swift_fix/setup/rfq_update.py). Handles RFQ save restrictions and submit timeline comments.
   * **Backend Utilities**: Located in [mr_utils.py](file:///workspace/development/frappe-bench/apps/swift_fix/swift_fix/setup/mr_utils.py). Contains functions such as `change_mr_status`, `has_active_po`, `has_completed_po`, `analyze_mr`, and `validate_mr`.
-  * **Hooks Registry**: Registered in [hooks.py](file:///workspace/development/frappe-bench/apps/swift_fix/swift_fix/hooks.py) under the `doc_events` section for the `Material Request`, `Request for Quotation`, `Purchase Order`, `Purchase Receipt`, and `Asset Capitalization` Doctypes.
+  * **Hooks Registry**: Registered in [hooks.py](file:///workspace/development/frappe-bench/apps/swift_fix/swift_fix/hooks.py) under the `doc_events` section for the `Material Request`, `Request for Quotation`, `Purchase Order`, `Purchase Receipt`, `Asset Capitalization`, `Asset`, and `Purchase Invoice` Doctypes.
 * **Client-Side Scripts**:
   * Located in [client_script.json](file:///workspace/development/frappe-bench/apps/swift_fix/swift_fix/fixtures/client_script.json).
   * Controls dynamic UI banner updates (showing Material Request status in the HTML field without marking the form dirty) and client-side save/action button behaviors.
