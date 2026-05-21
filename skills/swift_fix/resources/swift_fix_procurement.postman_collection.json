@@ -1,0 +1,677 @@
+{
+	"info": {
+		"_postman_id": "8b5f3964-b8be-40ee-9e6e-d23dfc785721",
+		"name": "Swift Fix - Procurement based Asset Deployment",
+		"description": "Postman collection to test the Swift Fix Procurement-based Asset Deployment workflow using Frappe's REST API.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "usr",
+									"value": "{{usr}}",
+									"type": "text"
+								},
+								{
+									"key": "pwd",
+									"value": "{{pwd}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/method/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"login"
+							]
+						},
+						"description": "Authenticate user session. Succeeding requests automatically reuse the session cookie."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "1. Material Request (MR)",
+			"item": [
+				{
+					"name": "Create Material Request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"material_request_type\": \"Purchase\",\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"custom_location\": \"Sample Location\",\n    \"custom_raised_by\": \"vinodkumarkolli@gmail.com\",\n    \"items\": [\n        {\n            \"item_code\": \"MBLIT\",\n            \"qty\": 2,\n            \"schedule_date\": \"2026-05-30\",\n            \"warehouse\": \"Stores - SE-AK\",\n            \"uom\": \"Square Foot\",\n            \"expense_account\": \"Marketing Expenses - SE-AK\",\n            \"cost_center\": \"Main - SE-AK\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Material Request",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Material Request"
+							]
+						},
+						"description": "Create a new Material Request. Note that the item code must be a Fixed Asset item (is_fixed_asset = 1)."
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Material Request",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"docstatus\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Material Request/{{mrName}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Material Request",
+								"{{mrName}}"
+							]
+						},
+						"description": "Submit the Material Request."
+					},
+					"response": []
+				},
+				{
+					"name": "Get MR Status Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/method/swift_fix.setup.mr_utils.get_mr_status_details?mr_name={{mrName}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"swift_fix.setup.mr_utils.get_mr_status_details"
+							],
+							"query": [
+								{
+									"key": "mr_name",
+									"value": "{{mrName}}"
+								}
+							]
+						},
+						"description": "Fetch active PO and completed PO status landmarks for the Material Request."
+					},
+					"response": []
+				},
+				{
+					"name": "Change MR Status",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mr_name\": \"{{mrName}}\",\n    \"status\": \"Shortlisted\",\n    \"reason\": \"Vendor quotation requested\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/method/swift_fix.setup.mr_utils.change_mr_status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"swift_fix.setup.mr_utils.change_mr_status"
+							]
+						},
+						"description": "Transition MR processing status (e.g. to Shortlisted, Held, or Cancelled) and post a timeline comment."
+					},
+					"response": []
+				},
+				{
+					"name": "Analyze MR Location",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/method/swift_fix.setup.mr_utils.analyze_mr?mr_name={{mrName}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"swift_fix.setup.mr_utils.analyze_mr"
+							],
+							"query": [
+								{
+									"key": "mr_name",
+									"value": "{{mrName}}"
+								}
+							]
+						},
+						"description": "Fetch list of other MRs, Assets in the same location, and all linked PO details."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Request for Quotation (RFQ)",
+			"item": [
+				{
+					"name": "Create Request for Quotation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"custom_request_details\": \"{{mrName}}\",\n    \"vendors\": [\n        {\n            \"vendor\": \"G & JC Signage\"\n        }\n    ],\n    \"items\": [\n        {\n            \"item_code\": \"MBLIT\",\n            \"qty\": 2,\n            \"warehouse\": \"Stores - SE-AK\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Request for Quotation",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Request for Quotation"
+							]
+						},
+						"description": "Create an RFQ linked to the MR. Note: Will fail if linked MR is not in Shortlisted status."
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Request for Quotation",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"docstatus\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Request for Quotation/{{rfqName}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Request for Quotation",
+								"{{rfqName}}"
+							]
+						},
+						"description": "Submit the RFQ. Automatically adds a timeline comment to the linked Material Request."
+					},
+					"response": []
+				},
+				{
+					"name": "RFQ Update Dimensions",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"doc\": \"{{rfqName}}\",\n    \"user\": \"vinodkumarkolli@gmail.com\",\n    \"length\": 8.0,\n    \"height\": 5.0,\n    \"depth\": 0.5\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/method/swift_fix.setup.rfq_update.rfq_update_dimensions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"swift_fix.setup.rfq_update.rfq_update_dimensions"
+							]
+						},
+						"description": "Update RFQ Recce dimensions."
+					},
+					"response": []
+				},
+				{
+					"name": "RFQ Update Dimensions with Images",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"doc\": \"{{rfqName}}\",\n    \"user\": \"vinodkumarkolli@gmail.com\",\n    \"length\": 8.0,\n    \"height\": 5.0,\n    \"depth\": 0.5,\n    \"image1_url\": \"https://example.com/photo1.jpg\",\n    \"image2_url\": \"https://example.com/photo2.jpg\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/method/swift_fix.setup.rfq_update.rfq_update_dimensions_with_images",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"swift_fix.setup.rfq_update.rfq_update_dimensions_with_images"
+							]
+						},
+						"description": "Update RFQ Recce dimensions with image attachments from remote S3 URLs."
+					},
+					"response": []
+				},
+				{
+					"name": "RFQ Change Recce Status",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"doc\": \"{{rfqName}}\",\n    \"to_state\": \"Validated\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/method/swift_fix.setup.rfq_update.rfq_change_recce_status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"swift_fix.setup.rfq_update.rfq_change_recce_status"
+							]
+						},
+						"description": "Update the Recce status of the RFQ (e.g. Validated or Invalidated)."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Purchase Order (PO)",
+			"item": [
+				{
+					"name": "Create Purchase Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"supplier\": \"G & JC Signage\",\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"schedule_date\": \"2026-05-30\",\n    \"items\": [\n        {\n            \"item_code\": \"MBLIT\",\n            \"qty\": 2,\n            \"rate\": 150,\n            \"material_request\": \"{{mrName}}\",\n            \"warehouse\": \"Stores - SE-AK\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Purchase Order",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Purchase Order"
+							]
+						},
+						"description": "Create a Purchase Order referencing the Material Request."
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Purchase Order",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"docstatus\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Purchase Order/{{poName}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Purchase Order",
+								"{{poName}}"
+							]
+						},
+						"description": "Submit the Purchase Order. Automatically moves MR status to Under Process."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Purchase Receipt (PR)",
+			"item": [
+				{
+					"name": "Create Purchase Receipt",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"supplier\": \"G & JC Signage\",\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"items\": [\n        {\n            \"item_code\": \"MBLIT\",\n            \"qty\": 2,\n            \"rate\": 150,\n            \"purchase_order\": \"{{poName}}\",\n            \"purchase_order_item\": \"{{poItemName}}\",\n            \"warehouse\": \"Stores - SE-AK\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Purchase Receipt",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Purchase Receipt"
+							]
+						},
+						"description": "Create a Purchase Receipt referencing the Purchase Order."
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Purchase Receipt",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"docstatus\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Purchase Receipt/{{prName}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Purchase Receipt",
+								"{{prName}}"
+							]
+						},
+						"description": "Submit the Purchase Receipt. Automatically completes the PO and moves MR status to Item Received."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5. Asset Capitalization",
+			"item": [
+				{
+					"name": "Create Asset Capitalization",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"custom_purchase_order\": \"{{poName}}\",\n    \"target_item_code\": \"MBLIT\",\n    \"posting_date\": \"2026-05-21\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Asset Capitalization",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Asset Capitalization"
+							]
+						},
+						"description": "Create an Asset Capitalization."
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Asset Capitalization",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"docstatus\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Asset Capitalization/{{acName}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Asset Capitalization",
+								"{{acName}}"
+							]
+						},
+						"description": "Submit Asset Capitalization. Automatically moves MR status to Asset Capitalised."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "6. Assets & Inventory",
+			"item": [
+				{
+					"name": "Get Assets by PO Reference",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Asset?filters=[[\"custom_purchase_order\", \"=\", \"{{poName}}\"]]",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Asset"
+							],
+							"query": [
+								{
+									"key": "filters",
+									"value": "[[\"custom_purchase_order\", \"=\", \"{{poName}}\"]]"
+								}
+							]
+						},
+						"description": "Fetch any automatically created Asset documents linked to our Purchase Order."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Stock Ledger Entries for Receipt",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Stock Ledger Entry?filters=[[\"voucher_no\", \"=\", \"{{prName}}\"]]",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Stock Ledger Entry"
+							],
+							"query": [
+								{
+									"key": "filters",
+									"value": "[[\"voucher_no\", \"=\", \"{{prName}}\"]]"
+								}
+							]
+						},
+						"description": "Fetch Stock Ledger Entries (SLE) associated with the Purchase Receipt."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Item details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Item/MBLIT",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Item",
+								"MBLIT"
+							]
+						},
+						"description": "Fetch metadata and settings for the Item (e.g. is_fixed_asset flag)."
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://cmms.localhost",
+			"type": "string"
+		},
+		{
+			"key": "usr",
+			"value": "Administrator",
+			"type": "string"
+		},
+		{
+			"key": "pwd",
+			"value": "admin",
+			"type": "string"
+		},
+		{
+			"key": "mrName",
+			"value": "MAT-MR-2026-00001",
+			"type": "string"
+		},
+		{
+			"key": "rfqName",
+			"value": "RFQ-2026-00001",
+			"type": "string"
+		},
+		{
+			"key": "poName",
+			"value": "PUR-ORD-2026-00001",
+			"type": "string"
+		},
+		{
+			"key": "poItemName",
+			"value": "PUR-ORD-2026-00001-001",
+			"type": "string"
+		},
+		{
+			"key": "prName",
+			"value": "MAT-PRE-2026-00001",
+			"type": "string"
+		},
+		{
+			"key": "acName",
+			"value": "ACC-ASC-2026-00001",
+			"type": "string"
+		}
+	]
+}
