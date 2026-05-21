@@ -142,32 +142,42 @@ To facilitate mobile client integration and testing, a Postman API collection is
 
 The collection relies on the following Postman environment/collection variables:
 * `baseUrl`: The base URL of the CMMS instance (default: `http://cmms.localhost`).
-* `usr`: The credentials username (default: `Administrator`).
-* `pwd`: The credentials password (default: `admin`).
+* `apiKey`: The API Key of the CMMS user.
+* `apiSecret`: The API Secret of the CMMS user.
 * `mrName`, `rfqName`, `poName`, `poItemName`, `prName`, `acName`: Dynamic resource names to chain workflow steps sequentially.
 
-### Endpoint Categories
+### Authentication
 
-1. **Authentication**: Call the `Login` method (`POST /api/method/login`) first. Postman will automatically manage and attach the session cookie to subsequent requests.
-2. **Material Request**:
+Token-based authentication is configured at the **Collection Level**. The collection automatically adds the standard header:
+`Authorization: token {{apiKey}}:{{apiSecret}}`
+to every request. Ensure `apiKey` and `apiSecret` variables are correctly populated in your environment before executing requests.
+
+### Endpoint Categories
+0. **Setup Prerequisites**:
+   * Create Sample Item: `POST /api/resource/Item`
+   * Create Sample Supplier: `POST /api/resource/Supplier`
+1. **Material Request**:
    * Create MR: `POST /api/resource/Material Request`
    * Submit MR: `PUT /api/resource/Material Request/{{mrName}}` (passes `{"docstatus": 1}`)
    * Change MR Status: `POST /api/method/swift_fix.setup.mr_utils.change_mr_status` (transitions MR status)
    * Get MR Status Details: `GET /api/method/swift_fix.setup.mr_utils.get_mr_status_details`
    * Analyze MR Location: `GET /api/method/swift_fix.setup.mr_utils.analyze_mr`
-3. **Request for Quotation**:
+2. **Request for Quotation**:
    * Create RFQ: `POST /api/resource/Request for Quotation`
    * Submit RFQ: `PUT /api/resource/Request for Quotation/{{rfqName}}`
    * Update RFQ dimensions: `POST /api/method/swift_fix.setup.rfq_update.rfq_update_dimensions`
    * Update RFQ dimensions and photos: `POST /api/method/swift_fix.setup.rfq_update.rfq_update_dimensions_with_images`
    * Change Recce status: `POST /api/method/swift_fix.setup.rfq_update.rfq_change_recce_status`
-4. **Purchase Order**:
+3. **Purchase Order**:
    * Create PO: `POST /api/resource/Purchase Order`
    * Submit PO: `PUT /api/resource/Purchase Order/{{poName}}`
-5. **Purchase Receipt**:
+4. **Purchase Receipt**:
    * Create PR: `POST /api/resource/Purchase Receipt`
    * Submit PR: `PUT /api/resource/Purchase Receipt/{{prName}}`
-6. **Asset Capitalization**:
+5. **Asset Capitalization**:
    * Create Asset Capitalization: `POST /api/resource/Asset Capitalization`
    * Submit Asset Capitalization: `PUT /api/resource/Asset Capitalization/{{acName}}`
-
+6. **Assets & Inventory**:
+   * Fetch assets by PO reference: `GET /api/resource/Asset?filters=[["custom_purchase_order", "=", "{{poName}}"]]`
+   * Fetch stock ledger entries for receipt: `GET /api/resource/Stock Ledger Entry?filters=[["voucher_no", "=", "{{prName}}"]]`
+   * Fetch item details: `GET /api/resource/Item/MBLIT`

@@ -5,42 +5,82 @@
 		"description": "Postman collection to test the Swift Fix Procurement-based Asset Deployment workflow using Frappe's REST API.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "token {{apiKey}}:{{apiSecret}}",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "Authorization",
+				"type": "string"
+			}
+		]
+	},
 	"item": [
 		{
-			"name": "Authentication",
+			"name": "0. Setup Prerequisites",
 			"item": [
 				{
-					"name": "Login",
+					"name": "Create Sample Item",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "usr",
-									"value": "{{usr}}",
-									"type": "text"
-								},
-								{
-									"key": "pwd",
-									"value": "{{pwd}}",
-									"type": "text"
-								}
-							]
+							"mode": "raw",
+							"raw": "{\n    \"item_code\": \"MBLIT\",\n    \"item_name\": \"Mounting Backlit\",\n    \"item_group\": \"Consumable\",\n    \"stock_uom\": \"Square Foot\",\n    \"is_fixed_asset\": 1,\n    \"is_stock_item\": 0\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/method/login",
+							"raw": "{{baseUrl}}/api/resource/Item",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
-								"method",
-								"login"
+								"resource",
+								"Item"
 							]
 						},
-						"description": "Authenticate user session. Succeeding requests automatically reuse the session cookie."
+						"description": "Create sample item 'MBLIT' required for testing the procurement flow. Must be a fixed asset (is_fixed_asset = 1)."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Sample Supplier",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"supplier_name\": \"G & JC Signage\",\n    \"supplier_type\": \"Company\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Supplier",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Supplier"
+							]
+						},
+						"description": "Create sample supplier 'G & JC Signage' required for testing the procurement flow."
 					},
 					"response": []
 				}
@@ -634,13 +674,13 @@
 			"type": "string"
 		},
 		{
-			"key": "usr",
-			"value": "Administrator",
+			"key": "apiKey",
+			"value": "your_api_key_here",
 			"type": "string"
 		},
 		{
-			"key": "pwd",
-			"value": "admin",
+			"key": "apiSecret",
+			"value": "your_api_secret_here",
 			"type": "string"
 		},
 		{
