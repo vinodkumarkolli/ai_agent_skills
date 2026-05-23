@@ -155,7 +155,9 @@ When maintaining or extending this flow, ensure compliance with these components
 
 ## 5. REST API Integration & Postman Testing
 
-To facilitate mobile client integration and testing, a Postman API collection is provided at [swift_fix_procurement.postman_collection.json](file:///workspace/development/frappe-bench/.agents/skills/procurement-flow/resources/swift_fix_procurement.postman_collection.json).
+To facilitate mobile client integration and testing, separate Postman API collections are provided for the two workflows:
+* **Procurement-led Flow Collection**: [swift_fix_procurement_flow.postman_collection.json](file:///workspace/development/frappe-bench/agenticdocs/skills/swift_fix/resources/swift_fix_procurement_flow.postman_collection.json) or [local copy](file:///workspace/development/frappe-bench/.agents/skills/procurement-flow/resources/swift_fix_procurement_flow.postman_collection.json)
+* **Stock-led Flow Collection**: [swift_fix_stock_led_flow.postman_collection.json](file:///workspace/development/frappe-bench/agenticdocs/skills/swift_fix/resources/swift_fix_stock_led_flow.postman_collection.json) or [local copy](file:///workspace/development/frappe-bench/.agents/skills/procurement-flow/resources/swift_fix_stock_led_flow.postman_collection.json)
 
 ### Collection Variables
 
