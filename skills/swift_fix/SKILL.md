@@ -118,6 +118,19 @@ There are three primary document states that define the status of the entire pro
   * Upon submission of an Asset Capitalization, the linked Material Request's `custom_processing_status` automatically transitions to **Asset Capitalised**.
   * A timeline comment is posted on the MR: `"Status updated to Asset Capitalised upon submission of Asset Capitalization [AC_Name]"`.
 
+### 8. Stock-led Asset Flow (Non-Procurement Flow)
+* **Definition**: A simplified workflow where assets are created from stocked items (e.g. consumables/parts with `maintain_stock = 1`, `is_fixed_asset = 0`) instead of being purchased through the procurement pipeline (MR->RFQ->SQ->PO->PR).
+* **Process**:
+  1. Items are stocked in a warehouse via **Stock Entry** (SE) or Purchase Invoice.
+  2. **Asset Capitalization** is created. Under the stock-items child table, the user selects the stocked item, consumption quantity, and source warehouse.
+  3. Upon save/validation, the system enforces that a `target_asset_location` is supplied.
+  4. If validation passes, a corresponding draft **Asset** document is automatically generated at the target location.
+  5. Upon submitting the Asset Capitalization, the target asset is automatically submitted.
+  6. Upon cancelling the Asset Capitalization, the target asset is automatically cancelled.
+* **UI Dynamic Behavior**:
+  * The global detail popup widget dynamically detects if the asset flow is stock-led (`is_stock_led = true` / absence of PO/PR references).
+  * In stock-led flows, procurement-specific timeline cards (RFQ, SQ, PO, PR) are completely hidden, providing a clean user interface focusing only on consumption, capitalization details (including dimensions and installation photos), and asset creation.
+
 ---
 
 ## 4. Implementation Guidelines & File Locations
@@ -125,8 +138,9 @@ There are three primary document states that define the status of the entire pro
 When maintaining or extending this flow, ensure compliance with these components:
 
 * **Server-Side Hooks & Validation**:
-  * **Event Handlers**: Implemented in [popr_utils.py](file:///workspace/development/frappe-bench/apps/swift_fix/swift_fix/setup/popr_utils.py). Handles hooks and validations such as `on_po_submit`, `on_pr_submit`, `on_asset_capitalization_submit`, `generate_asset_qr`, `create_purchase_receipt_serial_nos`, and `check_purchase_invoice_capitalization`.
-  * **RFQ Validation**: Located in [rfq_update.py](file:///workspace/development/frappe-bench/apps/swift_fix/swift_fix/setup/rfq_update.py). Handles RFQ save restrictions and submit timeline comments.
+  * **Unified Utilities**: Centralized in [utils.py](file:///workspace/development/frappe-bench/apps/swift_fix/swift_fix/setup/utils.py). Houses the core business logic, including `get_asset_html`, `get_historic_flow_details`, `get_procurement_details`, and state verification rules.
+  * **Event Handlers**: Implemented in [popr_utils.py](file:///workspace/development/frappe-bench/apps/swift_fix/swift_fix/setup/popr_utils.py). Handles hooks and validations such as `on_po_submit`, `on_pr_submit`, `on_asset_capitalization_submit`, `generate_asset_qr`, `create_purchase_receipt_serial_nos`, and `check_purchase_invoice_capitalization` by delegating helper logic to `utils.py`.
+  * **RFQ Validation & Handlers**: Located in [rfq_utils.py](file:///workspace/development/frappe-bench/apps/swift_fix/swift_fix/setup/rfq_utils.py). Handles RFQ save restrictions and timeline comments.
   * **Backend Utilities**: Located in [mr_utils.py](file:///workspace/development/frappe-bench/apps/swift_fix/swift_fix/setup/mr_utils.py). Contains functions such as `change_mr_status`, `has_active_po`, `has_completed_po`, `analyze_mr`, and `validate_mr`.
   * **Hooks Registry**: Registered in [hooks.py](file:///workspace/development/frappe-bench/apps/swift_fix/swift_fix/hooks.py) under the `doc_events` section for the `Material Request`, `Request for Quotation`, `Purchase Order`, `Purchase Receipt`, `Asset Capitalization`, `Asset`, and `Purchase Invoice` Doctypes.
 * **Client-Side Scripts**:
@@ -182,9 +196,9 @@ to every request. Ensure `apiKey` and `apiSecret` variables are correctly popula
 7. **SQ**:
    * Create Request for Quotation: `POST /api/resource/Request for Quotation`
    * Submit Request for Quotation: `PUT /api/resource/Request for Quotation/{{rfqName}}`
-   * RFQ Update Dimensions: `POST /api/method/swift_fix.setup.rfq_update.rfq_update_dimensions`
-   * RFQ Update Dimensions with Images: `POST /api/method/swift_fix.setup.rfq_update.rfq_update_dimensions_with_images`
-   * RFQ Change Recce Status: `POST /api/method/swift_fix.setup.rfq_update.rfq_change_recce_status`
+   * RFQ Update Dimensions: `POST /api/method/swift_fix.setup.rfq_utils.rfq_update_dimensions`
+   * RFQ Update Dimensions with Images: `POST /api/method/swift_fix.setup.rfq_utils.rfq_update_dimensions_with_images`
+   * RFQ Change Recce Status: `POST /api/method/swift_fix.setup.rfq_utils.rfq_change_recce_status`
    * Create Supplier Quotation: `POST /api/resource/Supplier Quotation`
    * Submit Supplier Quotation: `PUT /api/resource/Supplier Quotation/{{sqName}}`
 8. **PO**:
@@ -201,4 +215,9 @@ to every request. Ensure `apiKey` and `apiSecret` variables are correctly popula
    * Submit Asset manually: `PUT /api/resource/Asset/{{assetName}}`
    * Get Stock Ledger Entries for Receipt: `GET /api/resource/Stock Ledger Entry?filters=[["voucher_no", "=", "{{prName}}"]]`
    * Get Item details: `GET /api/resource/Item/MBLIT`
-   * Get Procurement HTML Widget: `GET /api/method/swift_fix.setup.popr_utils.get_procurement_details?asset_name={{assetName}}`
+   * Get Procurement HTML Widget: `GET /api/method/swift_fix.setup.utils.get_procurement_details?asset_name={{assetName}}`
+12. **Stock-led Flow (Stock Entry & Capitalization)**:
+   * Create Stock Entry (Material Receipt): `POST /api/resource/Stock Entry`
+   * Submit Stock Entry: `PUT /api/resource/Stock Entry/{{seName}}`
+   * Create Stock-led Asset Capitalization: `POST /api/resource/Asset Capitalization`
+   * Submit Stock-led Asset Capitalization: `PUT /api/resource/Asset Capitalization/{{acName}}`

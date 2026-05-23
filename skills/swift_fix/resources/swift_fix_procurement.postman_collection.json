@@ -599,14 +599,14 @@
 							"raw": "{\n    \"doc\": \"{{rfqName}}\",\n    \"user\": \"Administrator\",\n    \"length\": 8.0,\n    \"height\": 5.0,\n    \"depth\": 0.5\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/method/swift_fix.setup.rfq_update.rfq_update_dimensions",
+							"raw": "{{baseUrl}}/api/method/swift_fix.setup.rfq_utils.rfq_update_dimensions",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
 								"method",
-								"swift_fix.setup.rfq_update.rfq_update_dimensions"
+								"swift_fix.setup.rfq_utils.rfq_update_dimensions"
 							]
 						},
 						"description": "Update RFQ Recce dimensions."
@@ -629,14 +629,14 @@
 							"raw": "{\n    \"doc\": \"{{rfqName}}\",\n    \"user\": \"Administrator\",\n    \"length\": 8.0,\n    \"height\": 5.0,\n    \"depth\": 0.5,\n    \"image1_url\": \"https://example.com/photo1.jpg\",\n    \"image2_url\": \"https://example.com/photo2.jpg\"\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/method/swift_fix.setup.rfq_update.rfq_update_dimensions_with_images",
+							"raw": "{{baseUrl}}/api/method/swift_fix.setup.rfq_utils.rfq_update_dimensions_with_images",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
 								"method",
-								"swift_fix.setup.rfq_update.rfq_update_dimensions_with_images"
+								"swift_fix.setup.rfq_utils.rfq_update_dimensions_with_images"
 							]
 						},
 						"description": "Update RFQ Recce dimensions with image attachments from remote S3 URLs."
@@ -659,14 +659,14 @@
 							"raw": "{\n    \"doc\": \"{{rfqName}}\",\n    \"to_state\": \"Validated\"\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/method/swift_fix.setup.rfq_update.rfq_change_recce_status",
+							"raw": "{{baseUrl}}/api/method/swift_fix.setup.rfq_utils.rfq_change_recce_status",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
 								"method",
-								"swift_fix.setup.rfq_update.rfq_change_recce_status"
+								"swift_fix.setup.rfq_utils.rfq_change_recce_status"
 							]
 						},
 						"description": "Update the Recce status of the RFQ (e.g. Validated or Invalidated)."
@@ -1122,14 +1122,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/method/swift_fix.setup.popr_utils.get_procurement_details?asset_name={{assetName}}",
+							"raw": "{{baseUrl}}/api/method/swift_fix.setup.utils.get_procurement_details?asset_name={{assetName}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
 								"method",
-								"swift_fix.setup.popr_utils.get_procurement_details"
+								"swift_fix.setup.utils.get_procurement_details"
 							],
 							"query": [
 								{
@@ -1139,6 +1139,101 @@
 							]
 						},
 						"description": "Fetch the generated HTML content displaying the full procurement lifecycle of the asset."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "12. Stock-led Flow (Stock Entry & Capitalization)",
+			"item": [
+				{
+					"name": "Create Stock Item A4 Sticker",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"item_code\": \"A4STICK\",\n    \"item_name\": \"A4 Sticker\",\n    \"item_group\": \"Consumable\",\n    \"stock_uom\": \"Nos\",\n    \"is_fixed_asset\": 0,\n    \"is_stock_item\": 1,\n    \"maintain_stock\": 1,\n    \"valuation_method\": \"FIFO\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Item",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Item"
+							]
+						},
+						"description": "Create a stock item 'A4STICK' which has maintain_stock = 1 and is_fixed_asset = 0."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Stock Entry (Material Receipt)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"purpose\": \"Material Receipt\",\n    \"stock_entry_type\": \"Material Receipt\",\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"items\": [\n        {\n            \"item_code\": \"A4STICK\",\n            \"qty\": 10,\n            \"t_warehouse\": \"Stores - SE-AK\",\n            \"basic_rate\": 10.0,\n            \"uom\": \"Nos\",\n            \"conversion_factor\": 1.0,\n            \"cost_center\": \"Main - SE-AK\",\n            \"expense_account\": \"Stock Adjustment - SE-AK\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Stock Entry",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Stock Entry"
+							]
+						},
+						"description": "Add stock for the consumable items via Stock Entry."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Stock-led Asset Capitalization",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"target_item_code\": \"MBLIT\",\n    \"target_qty\": 1,\n    \"target_asset_location\": \"Test Location\",\n    \"stock_items\": [\n        {\n            \"item_code\": \"A4STICK\",\n            \"qty\": 5,\n            \"stock_uom\": \"Nos\",\n            \"uom\": \"Nos\",\n            \"conversion_factor\": 1.0,\n            \"s_warehouse\": \"Stores - SE-AK\",\n            \"expense_account\": \"Capital Equipment - SE-AK\",\n            \"cost_center\": \"Main - SE-AK\",\n            \"amount\": 50.0\n        }\n    ],\n    \"custom_installation_length\": 8,\n    \"custom_installation_height\": 5,\n    \"custom_installation_depth\": 0.6,\n    \"custom_installation_photo_1\": \"/files/install1.png\",\n    \"custom_installation_photo_2\": \"/files/install2.png\",\n    \"custom_installation_notes\": \"Stock-led asset installed successfully.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Asset Capitalization",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Asset Capitalization"
+							]
+						},
+						"description": "Create a stock-led Asset Capitalization to capitalize consumed stocked items into a new Fixed Asset."
 					},
 					"response": []
 				}
