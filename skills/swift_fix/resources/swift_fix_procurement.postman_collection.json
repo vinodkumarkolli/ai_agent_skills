@@ -373,7 +373,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"material_request_type\": \"Purchase\",\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"custom_location\": \"Test Location\",\n    \"custom_raised_by\": \"Administrator\",\n    \"items\": [\n        {\n            \"item_code\": \"MBLIT\",\n            \"qty\": 2,\n            \"custom_request_description\": \"Sample Description\",\n            \"schedule_date\": \"2026-05-30\",\n            \"warehouse\": \"Stores - SE-AK\",\n            \"uom\": \"Square Foot\",\n            \"expense_account\": \"Capital Equipment - SE-AK\",\n            \"cost_center\": \"Main - SE-AK\"\n        }\n    ]\n}"
+							"raw": "{\n    \"material_request_type\": \"Purchase\",\n   \"docstatus\": 1,\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"custom_location\": \"Test Location\",\n    \"custom_raised_by\": \"Administrator\",\n    \"items\": [\n        {\n            \"item_code\": \"MBLIT\",\n            \"qty\": 2,\n            \"custom_request_description\": \"Sample Description\",\n            \"schedule_date\": \"2026-05-30\",\n            \"warehouse\": \"Stores - SE-AK\",\n            \"uom\": \"Square Foot\",\n            \"expense_account\": \"Capital Equipment - SE-AK\",\n            \"cost_center\": \"Main - SE-AK\"\n        }\n    ]\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/resource/Material Request",
