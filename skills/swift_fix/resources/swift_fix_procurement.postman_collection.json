@@ -229,7 +229,9 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"location_name\": \"Test Location\"\n}"
+							{
+							  "raw": "{\n    \"location_name\": \"Test Location\",\n    \"custom_location_type\": \"Retailer\",\n    \"custom_beat_id\": \"Sample BEAT\",\n    \"custom_address\": \"Sample Address\",\n    \"custom_pincode\": 600128,\n    \"latitude\": 19.98734987,\n    \"longitude\": 81.389470,\n    \"location\": {\n        \"type\": \"Feature\",\n        \"geometry\": {\n            \"type\": \"Point\",\n            \"coordinates\": [\n                81.38947,\n                19.98734987\n            ]\n        }\n    }\n}"
+							}
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/resource/Location",
