@@ -229,7 +229,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							    "raw": "{\n    \"location_name\": \"Test Location\",\n    \"custom_location_type\": \"Retailer\",\n    \"custom_beat_id\": \"Sample BEAT\",\n    \"custom_address\": \"Sample Address\",\n    \"custom_pincode\": 600128,\n    \"latitude\": 19.98734987,\n    \"longitude\": 81.389470,\n    \"location\": \"{\\\"type\\\": \\\"FeatureCollection\\\", \\\"features\\\": [{\\\"type\\\": \\\"Feature\\\", \\\"properties\\\": {}, \\\"geometry\\\": {\\\"type\\\": \\\"Point\\\", \\\"coordinates\\\": [81.38947, 19.98734987]}}]}\"\n}"
+							"raw": "{\n    \"location_name\": \"Test Location\",\n    \"custom_location_type\": \"Retailer\",\n    \"custom_beat_id\": \"Sample BEAT\",\n    \"custom_address\": \"Sample Address\",\n    \"custom_pincode\": 600128,\n    \"latitude\": 19.98734987,\n    \"longitude\": 81.389470,\n    \"location\": \"{\\\"type\\\": \\\"FeatureCollection\\\", \\\"features\\\": [{\\\"type\\\": \\\"Feature\\\", \\\"properties\\\": {}, \\\"geometry\\\": {\\\"type\\\": \\\"Point\\\", \\\"coordinates\\\": [81.38947, 19.98734987]}}]}\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/resource/Location",
@@ -324,7 +324,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"item_code\": \"MBLIT\",\n    \"item_name\": \"Mounting Backlit\",\n    \"item_group\": \"Consumable\",\n    \"stock_uom\": \"Square Foot\",\n    \"is_fixed_asset\": 1,\n    \"is_stock_item\": 0,\n    \"auto_create_assets\": 1,\n    \"asset_category\": \"Capital Equipment\",\n    \"asset_naming_series\": \"ACC-ASS-.YYYY.-\"\n}"
+							"raw": "{\n    \"item_code\": \"MBLIT\",\n    \"item_name\": \"Mounting Backlit\",\n    \"item_group\": \"Consumable\",\n    \"stock_uom\": \"Nos\",\n    \"is_fixed_asset\": 1,\n    \"is_stock_item\": 0,\n    \"auto_create_assets\": 1,\n    \"asset_category\": \"Capital Equipment\",\n    \"asset_naming_series\": \"ACC-ASS-.YYYY.-\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/resource/Item",
@@ -373,7 +373,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"material_request_type\": \"Purchase\",\n   \"docstatus\": 1,\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"custom_location\": \"Test Location\",\n    \"custom_raised_by\": \"Administrator\",\n    \"items\": [\n        {\n            \"item_code\": \"MBLIT\",\n            \"qty\": 2,\n            \"custom_request_description\": \"Sample Description\",\n            \"schedule_date\": \"2026-05-30\",\n            \"warehouse\": \"Stores - SE-AK\",\n            \"uom\": \"Square Foot\",\n            \"expense_account\": \"Capital Equipment - SE-AK\",\n            \"cost_center\": \"Main - SE-AK\"\n        }\n    ]\n}"
+							"raw": "{\n    \"material_request_type\": \"Purchase\",\n   \"docstatus\": 1,\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"custom_location\": \"Test Location\",\n    \"custom_raised_by\": \"Administrator\",\n    \"items\": [\n        {\n            \"item_code\": \"MBLIT\",\n            \"qty\": 1,\n            \"custom_request_description\": \"Sample Description\",\n            \"schedule_date\": \"2026-05-30\",\n            \"warehouse\": \"Stores - SE-AK\",\n            \"uom\": \"Nos\",\n            \"expense_account\": \"Capital Equipment - SE-AK\",\n            \"cost_center\": \"Main - SE-AK\"\n        }\n    ]\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/resource/Material Request",
@@ -535,7 +535,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"vendors\": [\n        {\n            \"supplier\": \"G & JC Signage\"\n        }\n    ],\n    \"items\": [\n        {\n            \"item_code\": \"MBLIT\",\n            \"qty\": 2,\n            \"warehouse\": \"Stores - SE-AK\",\n            \"material_request\": \"{{mrName}}\"\n        }\n    ]\n}"
+							"raw": "{\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"vendors\": [\n        {\n            \"supplier\": \"G & JC Signage\"\n        }\n    ],\n    \"items\": [\n        {\n            \"item_code\": \"MBLIT\",\n            \"qty\": 1,\n            \"warehouse\": \"Stores - SE-AK\",\n            \"material_request\": \"{{mrName}}\"\n        }\n    ]\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/resource/Request for Quotation",
@@ -700,7 +700,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"supplier\": \"G & JC Signage\",\n    \"items\": [\n        {\n            \"item_code\": \"MBLIT\",\n            \"qty\": 2,\n            \"rate\": 150.0,\n            \"uom\": \"Square Foot\",\n            \"conversion_factor\": 1.0,\n            \"warehouse\": \"Stores - SE-AK\",\n            \"request_for_quotation\": \"{{rfqName}}\"\n        }\n    ]\n}"
+							"raw": "{\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"supplier\": \"G & JC Signage\",\n    \"items\": [\n        {\n            \"item_code\": \"MBLIT\",\n            \"qty\": 1,\n            \"rate\": 150.0,\n            \"uom\": \"Nos\",\n            \"conversion_factor\": 1.0,\n            \"warehouse\": \"Stores - SE-AK\",\n            \"request_for_quotation\": \"{{rfqName}}\"\n        }\n    ]\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/resource/Supplier Quotation",
@@ -783,7 +783,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"supplier\": \"G & JC Signage\",\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"schedule_date\": \"2026-05-30\",\n    \"items\": [\n        {\n            \"item_code\": \"MBLIT\",\n            \"qty\": 2,\n            \"rate\": 150,\n            \"material_request\": \"{{mrName}}\",\n            \"warehouse\": \"Stores - SE-AK\"\n        }\n    ]\n}"
+							"raw": "{\n    \"supplier\": \"G & JC Signage\",\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"schedule_date\": \"2026-05-30\",\n    \"items\": [\n        {\n            \"item_code\": \"MBLIT\",\n            \"qty\": 1,\n            \"rate\": 150,\n            \"material_request\": \"{{mrName}}\",\n            \"warehouse\": \"Stores - SE-AK\"\n        }\n    ]\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/resource/Purchase Order",
@@ -863,7 +863,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"supplier\": \"G & JC Signage\",\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"items\": [\n        {\n            \"item_code\": \"MBLIT\",\n            \"qty\": 2,\n            \"rate\": 150,\n            \"purchase_order\": \"{{poName}}\",\n            \"purchase_order_item\": \"{{poItemName}}\",\n            \"warehouse\": \"Stores - SE-AK\"\n        }\n    ]\n}"
+							"raw": "{\n    \"supplier\": \"G & JC Signage\",\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"custom_qc_length\": 10.0,\n    \"custom_qc_height\": 12.0,\n    \"custom_qc_depth\": 14.0,\n    \"custom_qc_photo_1\": \"/files/qc1.png\",\n    \"custom_qc_photo_2\": \"/files/qc2.png\",\n    \"custom_qc_notes\": \"All items inspected and cleared.\",\n    \"items\": [\n        {\n            \"item_code\": \"MBLIT\",\n            \"qty\": 1,\n            \"rate\": 150,\n            \"purchase_order\": \"{{poName}}\",\n            \"purchase_order_item\": \"{{poItemName}}\",\n            \"warehouse\": \"Stores - SE-AK\"\n        }\n    ]\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/resource/Purchase Receipt",
