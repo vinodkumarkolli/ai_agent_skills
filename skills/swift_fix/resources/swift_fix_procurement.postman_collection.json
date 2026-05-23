@@ -22,10 +22,10 @@
 	},
 	"item": [
 		{
-			"name": "0. Setup Prerequisites",
+			"name": "1. Company",
 			"item": [
 				{
-					"name": "Create Sample Item",
+					"name": "Create Company",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -37,25 +37,25 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"item_code\": \"MBLIT\",\n    \"item_name\": \"Mounting Backlit\",\n    \"item_group\": \"Consumable\",\n    \"stock_uom\": \"Square Foot\",\n    \"is_fixed_asset\": 1,\n    \"is_stock_item\": 0\n}"
+							"raw": "{\n    \"company_name\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"default_currency\": \"INR\",\n    \"country\": \"India\",\n    \"abbr\": \"SE-AK\"\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/resource/Item",
+							"raw": "{{baseUrl}}/api/resource/Company",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
 								"resource",
-								"Item"
+								"Company"
 							]
 						},
-						"description": "Create sample item 'MBLIT' required for testing the procurement flow. Must be a fixed asset (is_fixed_asset = 1)."
+						"description": "Create Company 'Sravi Enterprises - Assets Kolapakkam' with abbreviation 'SE-AK'."
 					},
 					"response": []
 				},
 				{
-					"name": "Create Sample Supplier",
+					"name": "Create Supplier",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -83,14 +83,9 @@
 						"description": "Create sample supplier 'G & JC Signage' required for testing the procurement flow."
 					},
 					"response": []
-				}
-			]
-		},
-		{
-			"name": "1. Material Request (MR)",
-			"item": [
+				},
 				{
-					"name": "Create Material Request",
+					"name": "Create Warehouse",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -102,7 +97,283 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"material_request_type\": \"Purchase\",\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"custom_location\": \"Sample Location\",\n    \"custom_raised_by\": \"vinodkumarkolli@gmail.com\",\n    \"items\": [\n        {\n            \"item_code\": \"MBLIT\",\n            \"qty\": 2,\n            \"schedule_date\": \"2026-05-30\",\n            \"warehouse\": \"Stores - SE-AK\",\n            \"uom\": \"Square Foot\",\n            \"expense_account\": \"Marketing Expenses - SE-AK\",\n            \"cost_center\": \"Main - SE-AK\"\n        }\n    ]\n}"
+							"raw": "{\n    \"warehouse_name\": \"Stores\",\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"parent_warehouse\": \"All Warehouses - SE-AK\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Warehouse",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Warehouse"
+							]
+						},
+						"description": "Create Warehouse 'Stores - SE-AK'."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Accounts",
+			"item": [
+				{
+					"name": "Create Asset Received Account",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"account_name\": \"Asset Received But Not Billed\",\n    \"parent_account\": \"Stock Liabilities - SE-AK\",\n    \"account_type\": \"Asset Received But Not Billed\",\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"is_group\": 0\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Account",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Account"
+							]
+						},
+						"description": "Create Asset Received But Not Billed account."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Company Asset Received Account",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"asset_received_but_not_billed\": \"Asset Received But Not Billed - SE-AK\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Company/Sravi Enterprises - Assets Kolapakkam",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Company",
+								"Sravi Enterprises - Assets Kolapakkam"
+							]
+						},
+						"description": "Set default Asset Received But Not Billed account on Company."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Cost Center",
+			"item": [
+				{
+					"name": "Get Cost Centers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Cost Center?filters=[[\"company\", \"=\", \"Sravi Enterprises - Assets Kolapakkam\"]]",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Cost Center"
+							],
+							"query": [
+								{
+									"key": "filters",
+									"value": "[[\"company\", \"=\", \"Sravi Enterprises - Assets Kolapakkam\"]]"
+								}
+							]
+						},
+						"description": "Verify/retrieve Cost Centers under the Sravi Enterprises company."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Location",
+			"item": [
+				{
+					"name": "Create Location",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"location_name\": \"Test Location\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Location",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Location"
+							]
+						},
+						"description": "Create location 'Test Location'."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5. Stock Item (with Serial Number)",
+			"item": [
+				{
+					"name": "Create Asset Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"asset_category_name\": \"Capital Equipment\",\n    \"total_number_of_depreciations\": 3,\n    \"frequency_of_depreciation\": 12,\n    \"enable_cwip_accounting\": 0,\n    \"accounts\": [\n        {\n            \"company_name\": \"Sravi Enterprises - Assets Kolapakkam\",\n            \"fixed_asset_account\": \"Capital Equipment - SE-AK\",\n            \"accumulated_depreciation_account\": \"Accumulated Depreciations - SE-AK\",\n            \"depreciation_expense_account\": \"Depreciation - SE-AK\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Asset Category",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Asset Category"
+							]
+						},
+						"description": "Create Asset Category 'Capital Equipment'."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Service Item",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"item_code\": \"Installation Service\",\n    \"item_name\": \"Installation Service\",\n    \"item_group\": \"Consumable\",\n    \"stock_uom\": \"Nos\",\n    \"is_fixed_asset\": 0,\n    \"is_stock_item\": 0\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Item",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Item"
+							]
+						},
+						"description": "Create Service Item required for capitalization services."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Sample Item",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"item_code\": \"MBLIT\",\n    \"item_name\": \"Mounting Backlit\",\n    \"item_group\": \"Consumable\",\n    \"stock_uom\": \"Square Foot\",\n    \"is_fixed_asset\": 1,\n    \"is_stock_item\": 0,\n    \"auto_create_assets\": 1,\n    \"asset_category\": \"Capital Equipment\",\n    \"asset_naming_series\": \"ACC-ASS-.YYYY.-\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Item",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Item"
+							]
+						},
+						"description": "Create sample item 'MBLIT' required for testing the procurement flow. Must be a fixed asset (is_fixed_asset = 1)."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "6. MR",
+			"item": [
+				{
+					"name": "Create Material Request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"mrName\", jsonData.data.name);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"material_request_type\": \"Purchase\",\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"custom_location\": \"Test Location\",\n    \"custom_raised_by\": \"Administrator\",\n    \"items\": [\n        {\n            \"item_code\": \"MBLIT\",\n            \"qty\": 2,\n            \"schedule_date\": \"2026-05-30\",\n            \"warehouse\": \"Stores - SE-AK\",\n            \"uom\": \"Square Foot\",\n            \"expense_account\": \"Capital Equipment - SE-AK\",\n            \"cost_center\": \"Main - SE-AK\"\n        }\n    ]\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/resource/Material Request",
@@ -235,10 +506,24 @@
 			]
 		},
 		{
-			"name": "2. Request for Quotation (RFQ)",
+			"name": "7. SQ",
 			"item": [
 				{
 					"name": "Create Request for Quotation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"rfqName\", jsonData.data.name);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [
@@ -250,7 +535,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"custom_request_details\": \"{{mrName}}\",\n    \"vendors\": [\n        {\n            \"vendor\": \"G & JC Signage\"\n        }\n    ],\n    \"items\": [\n        {\n            \"item_code\": \"MBLIT\",\n            \"qty\": 2,\n            \"warehouse\": \"Stores - SE-AK\"\n        }\n    ]\n}"
+							"raw": "{\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"vendors\": [\n        {\n            \"supplier\": \"G & JC Signage\"\n        }\n    ],\n    \"items\": [\n        {\n            \"item_code\": \"MBLIT\",\n            \"qty\": 2,\n            \"warehouse\": \"Stores - SE-AK\",\n            \"material_request\": \"{{mrName}}\"\n        }\n    ]\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/resource/Request for Quotation",
@@ -263,7 +548,7 @@
 								"Request for Quotation"
 							]
 						},
-						"description": "Create an RFQ linked to the MR. Note: Will fail if linked MR is not in Shortlisted status."
+						"description": "Create an RFQ linked to the MR in its items table. Note: Will fail if linked MR is not in Shortlisted status."
 					},
 					"response": []
 				},
@@ -311,7 +596,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"doc\": \"{{rfqName}}\",\n    \"user\": \"vinodkumarkolli@gmail.com\",\n    \"length\": 8.0,\n    \"height\": 5.0,\n    \"depth\": 0.5\n}"
+							"raw": "{\n    \"doc\": \"{{rfqName}}\",\n    \"user\": \"Administrator\",\n    \"length\": 8.0,\n    \"height\": 5.0,\n    \"depth\": 0.5\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/method/swift_fix.setup.rfq_update.rfq_update_dimensions",
@@ -341,7 +626,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"doc\": \"{{rfqName}}\",\n    \"user\": \"vinodkumarkolli@gmail.com\",\n    \"length\": 8.0,\n    \"height\": 5.0,\n    \"depth\": 0.5,\n    \"image1_url\": \"https://example.com/photo1.jpg\",\n    \"image2_url\": \"https://example.com/photo2.jpg\"\n}"
+							"raw": "{\n    \"doc\": \"{{rfqName}}\",\n    \"user\": \"Administrator\",\n    \"length\": 8.0,\n    \"height\": 5.0,\n    \"depth\": 0.5,\n    \"image1_url\": \"https://example.com/photo1.jpg\",\n    \"image2_url\": \"https://example.com/photo2.jpg\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/method/swift_fix.setup.rfq_update.rfq_update_dimensions_with_images",
@@ -387,14 +672,106 @@
 						"description": "Update the Recce status of the RFQ (e.g. Validated or Invalidated)."
 					},
 					"response": []
+				},
+				{
+					"name": "Create Supplier Quotation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"sqName\", jsonData.data.name);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"supplier\": \"G & JC Signage\",\n    \"items\": [\n        {\n            \"item_code\": \"MBLIT\",\n            \"qty\": 2,\n            \"rate\": 150.0,\n            \"uom\": \"Square Foot\",\n            \"conversion_factor\": 1.0,\n            \"warehouse\": \"Stores - SE-AK\",\n            \"request_for_quotation\": \"{{rfqName}}\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Supplier Quotation",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Supplier Quotation"
+							]
+						},
+						"description": "Create Supplier Quotation (SQ) from the RFQ."
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Supplier Quotation",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"docstatus\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Supplier Quotation/{{sqName}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Supplier Quotation",
+								"{{sqName}}"
+							]
+						},
+						"description": "Submit Supplier Quotation."
+					},
+					"response": []
 				}
 			]
 		},
 		{
-			"name": "3. Purchase Order (PO)",
+			"name": "8. PO",
 			"item": [
 				{
 					"name": "Create Purchase Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"poName\", jsonData.data.name);",
+									"    if (jsonData.data.items && jsonData.data.items.length > 0) {",
+									"        pm.environment.set(\"poItemName\", jsonData.data.items[0].name);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [
@@ -457,10 +834,24 @@
 			]
 		},
 		{
-			"name": "4. Purchase Receipt (PR)",
+			"name": "9. PR",
 			"item": [
 				{
 					"name": "Create Purchase Receipt",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"prName\", jsonData.data.name);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [
@@ -523,10 +914,24 @@
 			]
 		},
 		{
-			"name": "5. Asset Capitalization",
+			"name": "10. Asset Capitalization",
 			"item": [
 				{
 					"name": "Create Asset Capitalization",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"acName\", jsonData.data.name);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [
@@ -538,7 +943,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"custom_purchase_order\": \"{{poName}}\",\n    \"target_item_code\": \"MBLIT\",\n    \"posting_date\": \"2026-05-21\"\n}"
+							"raw": "{\n    \"company\": \"Sravi Enterprises - Assets Kolapakkam\",\n    \"custom_purchase_order\": \"{{poName}}\",\n    \"target_asset\": \"{{assetName}}\",\n    \"target_item_code\": \"MBLIT\",\n    \"target_asset_location\": \"Test Location\",\n    \"posting_date\": \"2026-05-21\",\n    \"service_items\": [\n        {\n            \"item_code\": \"Installation Service\",\n            \"qty\": 1,\n            \"uom\": \"Nos\",\n            \"rate\": 100.0,\n            \"expense_account\": \"Capital Equipment - SE-AK\",\n            \"cost_center\": \"Main - SE-AK\"\n        }\n    ]\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/resource/Asset Capitalization",
@@ -589,15 +994,31 @@
 			]
 		},
 		{
-			"name": "6. Assets & Inventory",
+			"name": "11. Asset",
 			"item": [
 				{
-					"name": "Get Assets by PO Reference",
+					"name": "Get Assets by PR Reference",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.length > 0) {",
+									"        pm.environment.set(\"assetName\", jsonData.data[0].name);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/resource/Asset?filters=[[\"custom_purchase_order\", \"=\", \"{{poName}}\"]]",
+							"raw": "{{baseUrl}}/api/resource/Asset?filters=[[\"purchase_receipt\", \"=\", \"{{prName}}\"]]",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -609,11 +1030,42 @@
 							"query": [
 								{
 									"key": "filters",
-									"value": "[[\"custom_purchase_order\", \"=\", \"{{poName}}\"]]"
+									"value": "[[\"purchase_receipt\", \"=\", \"{{prName}}\"]]"
 								}
 							]
 						},
-						"description": "Fetch any automatically created Asset documents linked to our Purchase Order."
+						"description": "Fetch any automatically created Asset documents linked to our Purchase Receipt and store the first Asset Name to environment variable `assetName`."
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Asset manually",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"docstatus\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resource/Asset/{{assetName}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Asset",
+								"{{assetName}}"
+							]
+						},
+						"description": "Submit the Asset record manually (docstatus = 1)."
 					},
 					"response": []
 				},
@@ -663,6 +1115,32 @@
 						"description": "Fetch metadata and settings for the Item (e.g. is_fixed_asset flag)."
 					},
 					"response": []
+				},
+				{
+					"name": "Get Procurement HTML Widget",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/method/swift_fix.setup.popr_utils.get_procurement_details?asset_name={{assetName}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"swift_fix.setup.popr_utils.get_procurement_details"
+							],
+							"query": [
+								{
+									"key": "asset_name",
+									"value": "{{assetName}}"
+								}
+							]
+						},
+						"description": "Fetch the generated HTML content displaying the full procurement lifecycle of the asset."
+					},
+					"response": []
 				}
 			]
 		}
@@ -694,6 +1172,11 @@
 			"type": "string"
 		},
 		{
+			"key": "sqName",
+			"value": "SUP-QTN-2026-00001",
+			"type": "string"
+		},
+		{
 			"key": "poName",
 			"value": "PUR-ORD-2026-00001",
 			"type": "string"
@@ -711,6 +1194,11 @@
 		{
 			"key": "acName",
 			"value": "ACC-ASC-2026-00001",
+			"type": "string"
+		},
+		{
+			"key": "assetName",
+			"value": "ACC-ASS-2026-00001",
 			"type": "string"
 		}
 	]

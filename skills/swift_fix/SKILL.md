@@ -33,7 +33,7 @@ flowchart TD
 
     subgraph Receipt & Serialization
         PO --> PR[Purchase Receipt<br><i>Completion of Mfg</i>]
-        PR -->|Simultaneous Creation<br>PO Reference| Asset[Asset<br><b>Completion of Procurement</b>]
+        PR -->|Simultaneous Creation<br>PR/Item Link| Asset[Asset<br><b>Completion of Procurement</b>]
     end
 
     subgraph Deployment
@@ -71,15 +71,20 @@ There are three primary document states that define the status of the entire pro
 ### 2. Request for Quotation (RFQ)
 * **Definition**: A document sent to one or more suppliers/vendors to request a quote.
 * **Validation**:
-  * An RFQ must link to a Material Request via the custom field `custom_request_details`.
-  * **Save Restriction**: RFQ cannot be saved/submitted unless the linked Material Request status (`custom_processing_status`) is **Shortlisted**.
+  * Links to Material Requests via the `material_request` field in the `items` child table.
+  * **Save Restriction**: RFQ cannot be saved/submitted unless there is at least one linked Material Request in the items table, and all linked Material Requests are in **Shortlisted** status.
 * **Submit Side-Effect**:
-  * Upon submission of an RFQ, a timeline comment must be automatically posted to the linked Material Request:
+  * Upon submission of an RFQ, a timeline comment must be automatically posted to all unique linked Material Requests:
     > `"A Quotation is requested from Vendor and Recce Process is in Progress"`
+* **UI Banner**:
+  * Displays linked Material Requests dynamically in the custom HTML field `custom_mr_html` on the RFQ form, supporting multiple MR cards if needed.
 
 ### 3. Sales Quotation (SQ)
 * **Definition**: The pricing quotation received back from the supplier/vendor (sometimes referred to as the Supplier Quotation).
 * **Role**: Details vendor pricing, dimensions, and specifications for evaluation against the RFQ.
+* **UI Banner**:
+  * Displays linked Material Requests dynamically in the custom HTML field `custom_mr_html`.
+  * Resolves Material Requests by checking `material_request` in its own items child table, falling back to checking linked `request_for_quotation` items if direct links are absent.
 
 ### 4. Purchase Order (PO)
 * **Definition**: Formal contract issued to the supplier specifying terms, pricing, and quantities.
@@ -95,7 +100,7 @@ There are three primary document states that define the status of the entire pro
   * A unique **Serial Number** must be generated for the item upon completion/submission of the Purchase Receipt.
 * **Simultaneous Creation**:
   * At the same time the Purchase Receipt is created/submitted, an associated **Asset** document must be created automatically.
-  * Both the PR and the new Asset must reference the shared Purchase Order (PO) in common.
+  * The new Asset is linked directly to the Purchase Receipt (PR) and Purchase Receipt Item.
 * **Submit Hook (`on_pr_submit`)**:
   * Upon submission of a PR, the associated PO's status is forced to **Completed**.
   * The linked Material Request's `custom_processing_status` automatically transitions to **Item Received**.
@@ -103,7 +108,7 @@ There are three primary document states that define the status of the entire pro
 
 ### 6. Asset
 * **Definition**: The resulting asset record representing completion of the procurement phase.
-* **State**: Contains serialization information and references the original Purchase Order.
+* **State**: Contains serialization information, is linked to the Purchase Receipt, and displays the linked Material Request, Purchase Order, Purchase Receipt, and Asset Capitalization details dynamically via a premium HTML widget (`custom_procurement_html`).
 
 ### 7. Asset Capitalisation
 * **Definition**: Signifies the actual **deployment** of the item received from the Purchase Receipt.
@@ -153,31 +158,47 @@ Token-based authentication is configured at the **Collection Level**. The collec
 to every request. Ensure `apiKey` and `apiSecret` variables are correctly populated in your environment before executing requests.
 
 ### Endpoint Categories
-0. **Setup Prerequisites**:
+1. **Company**:
+   * Create Company: `POST /api/resource/Company`
+   * Create Supplier: `POST /api/resource/Supplier`
+   * Create Warehouse: `POST /api/resource/Warehouse`
+2. **Accounts**:
+   * Create Asset Received Account: `POST /api/resource/Account`
+   * Update Company Asset Received Account: `PUT /api/resource/Company/Sravi Enterprises - Assets Kolapakkam`
+3. **Cost Center**:
+   * Get Cost Centers: `GET /api/resource/Cost Center`
+4. **Location**:
+   * Create Location: `POST /api/resource/Location`
+5. **Stock Item (with Serial Number)**:
+   * Create Asset Category: `POST /api/resource/Asset Category`
+   * Create Service Item: `POST /api/resource/Item`
    * Create Sample Item: `POST /api/resource/Item`
-   * Create Sample Supplier: `POST /api/resource/Supplier`
-1. **Material Request**:
+6. **MR**:
    * Create MR: `POST /api/resource/Material Request`
-   * Submit MR: `PUT /api/resource/Material Request/{{mrName}}` (passes `{"docstatus": 1}`)
-   * Change MR Status: `POST /api/method/swift_fix.setup.mr_utils.change_mr_status` (transitions MR status)
+   * Submit MR: `PUT /api/resource/Material Request/{{mrName}}`
    * Get MR Status Details: `GET /api/method/swift_fix.setup.mr_utils.get_mr_status_details`
+   * Change MR Status: `POST /api/method/swift_fix.setup.mr_utils.change_mr_status`
    * Analyze MR Location: `GET /api/method/swift_fix.setup.mr_utils.analyze_mr`
-2. **Request for Quotation**:
-   * Create RFQ: `POST /api/resource/Request for Quotation`
-   * Submit RFQ: `PUT /api/resource/Request for Quotation/{{rfqName}}`
-   * Update RFQ dimensions: `POST /api/method/swift_fix.setup.rfq_update.rfq_update_dimensions`
-   * Update RFQ dimensions and photos: `POST /api/method/swift_fix.setup.rfq_update.rfq_update_dimensions_with_images`
-   * Change Recce status: `POST /api/method/swift_fix.setup.rfq_update.rfq_change_recce_status`
-3. **Purchase Order**:
-   * Create PO: `POST /api/resource/Purchase Order`
-   * Submit PO: `PUT /api/resource/Purchase Order/{{poName}}`
-4. **Purchase Receipt**:
-   * Create PR: `POST /api/resource/Purchase Receipt`
-   * Submit PR: `PUT /api/resource/Purchase Receipt/{{prName}}`
-5. **Asset Capitalization**:
+7. **SQ**:
+   * Create Request for Quotation: `POST /api/resource/Request for Quotation`
+   * Submit Request for Quotation: `PUT /api/resource/Request for Quotation/{{rfqName}}`
+   * RFQ Update Dimensions: `POST /api/method/swift_fix.setup.rfq_update.rfq_update_dimensions`
+   * RFQ Update Dimensions with Images: `POST /api/method/swift_fix.setup.rfq_update.rfq_update_dimensions_with_images`
+   * RFQ Change Recce Status: `POST /api/method/swift_fix.setup.rfq_update.rfq_change_recce_status`
+   * Create Supplier Quotation: `POST /api/resource/Supplier Quotation`
+   * Submit Supplier Quotation: `PUT /api/resource/Supplier Quotation/{{sqName}}`
+8. **PO**:
+   * Create Purchase Order: `POST /api/resource/Purchase Order`
+   * Submit Purchase Order: `PUT /api/resource/Purchase Order/{{poName}}`
+9. **PR**:
+   * Create Purchase Receipt: `POST /api/resource/Purchase Receipt`
+   * Submit Purchase Receipt: `PUT /api/resource/Purchase Receipt/{{prName}}`
+10. **Asset Capitalization**:
    * Create Asset Capitalization: `POST /api/resource/Asset Capitalization`
    * Submit Asset Capitalization: `PUT /api/resource/Asset Capitalization/{{acName}}`
-6. **Assets & Inventory**:
-   * Fetch assets by PO reference: `GET /api/resource/Asset?filters=[["custom_purchase_order", "=", "{{poName}}"]]`
-   * Fetch stock ledger entries for receipt: `GET /api/resource/Stock Ledger Entry?filters=[["voucher_no", "=", "{{prName}}"]]`
-   * Fetch item details: `GET /api/resource/Item/MBLIT`
+11. **Asset**:
+   * Get Assets by PR Reference: `GET /api/resource/Asset?filters=[["purchase_receipt", "=", "{{prName}}"]]`
+   * Submit Asset manually: `PUT /api/resource/Asset/{{assetName}}`
+   * Get Stock Ledger Entries for Receipt: `GET /api/resource/Stock Ledger Entry?filters=[["voucher_no", "=", "{{prName}}"]]`
+   * Get Item details: `GET /api/resource/Item/MBLIT`
+   * Get Procurement HTML Widget: `GET /api/method/swift_fix.setup.popr_utils.get_procurement_details?asset_name={{assetName}}`
