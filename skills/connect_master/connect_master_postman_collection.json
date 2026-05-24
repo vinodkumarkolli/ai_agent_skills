@@ -186,6 +186,166 @@
 						"description": "Returns lists of addresses classified as 'allowed' or 'restricted' based on the Territory Admin's operating regions."
 					},
 					"response": []
+				},
+				{
+					"name": "Get Connect Items",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/resource/Connect Item?fields=[\"name\",\"item_name\",\"item_code\",\"item_image\",\"item_mrp\"]&filters={\"disabled\":0}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Connect Item"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "[\"name\",\"item_name\",\"item_code\",\"item_image\",\"item_mrp\"]",
+									"description": "JSON array of fields to retrieve."
+								},
+								{
+									"key": "filters",
+									"value": "{\"disabled\":0}",
+									"description": "JSON object of filters."
+								}
+							]
+						},
+						"description": "Fetches a list of active Connect Items with standard fields."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Address & Contact",
+			"description": "Endpoints to manage customer Addresses and Contacts.",
+			"item": [
+				{
+					"name": "Get Addresses",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/resource/Address?fields=[\"name\",\"address_title\",\"address_line1\",\"city\",\"pincode\",\"custom_resolved_territory\"]",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Address"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "[\"name\",\"address_title\",\"address_line1\",\"city\",\"pincode\",\"custom_resolved_territory\"]",
+									"description": "JSON array of fields to retrieve."
+								}
+							]
+						},
+						"description": "Fetches a list of Addresses."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Address",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"address_title\": \"Home Store\",\n    \"address_line1\": \"123 Main Street\",\n    \"address_line2\": \"Apt 4B\",\n    \"city\": \"Chennai\",\n    \"pincode\": \"600048\",\n    \"state\": \"Tamil Nadu\",\n    \"country\": \"India\",\n    \"custom_address_category\": \"Pharma\",\n    \"address_type\": \"Billing\",\n    \"links\": [\n        {\n            \"link_doctype\": \"User\",\n            \"link_name\": \"customer@example.com\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/resource/Address",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Address"
+							]
+						},
+						"description": "Creates a new Address linked to the User. Resolves territory automatically in the backend based on city/pincode matching."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Contacts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/resource/Contact?fields=[\"name\",\"first_name\",\"last_name\",\"mobile_no\",\"email_id\",\"address\"]",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Contact"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "[\"name\",\"first_name\",\"last_name\",\"mobile_no\",\"email_id\",\"address\"]",
+									"description": "JSON array of fields to retrieve."
+								}
+							]
+						},
+						"description": "Fetches a list of Contacts."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"address\": \"Home Store-customer@example.com\",\n    \"is_primary\": 1,\n    \"phone_nos\": [\n        {\n            \"phone\": \"9876543210\",\n            \"is_primary_mobile_no\": 1\n        }\n    ],\n    \"email_ids\": [\n        {\n            \"email_id\": \"john.doe@example.com\",\n            \"is_primary\": 1\n        }\n    ],\n    \"links\": [\n        {\n            \"link_doctype\": \"User\",\n            \"link_name\": \"customer@example.com\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/resource/Contact",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Contact"
+							]
+						},
+						"description": "Creates a new Contact linked to the User and an Address."
+					},
+					"response": []
 				}
 			]
 		},
@@ -257,6 +417,40 @@
 							]
 						},
 						"description": "Returns counts for orders classified in the 'Active', 'Unresolved', and 'History' groups."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Connect Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"order_date\": \"2026-05-24 14:53:11\",\n    \"user\": \"customer@example.com\",\n    \"delivery_address\": \"Home Store-customer@example.com\",\n    \"contact\": \"John Doe-customer@example.com\",\n    \"service_category\": \"Pharma\",\n    \"items\": [\n        {\n            \"item\": \"CONNECT-ITEM-00001\",\n            \"quantity\": 5,\n            \"item_rate\": 150.0,\n            \"line_item_amount\": 750.0\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/resource/Connect Order",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"resource",
+								"Connect Order"
+							]
+						},
+						"description": "Creates a new Connect Order with the specified line items, delivery address, contact, and category. Inits the order lifecycle."
 					},
 					"response": []
 				}
