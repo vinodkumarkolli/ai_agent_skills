@@ -1,0 +1,644 @@
+{
+	"info": {
+		"_postman_id": "c8fb775b-fb00-442d-bae1-cf37b53d9f79",
+		"name": "Connect Master API",
+		"description": "Postman collection to test and integrate with the Connect Master API endpoints for building the mobile/external clients. Supports passwordless OTP authentication and order lifecycle management.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"description": "Endpoints to authenticate and verify user sessions.",
+			"item": [
+				{
+					"name": "Send OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "customer@example.com",
+									"description": "Email address of the user logging in.",
+									"type": "text"
+								},
+								{
+									"key": "full_name",
+									"value": "Customer One",
+									"description": "Required if the user does not exist in the system yet.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/method/connect_master.api.send_otp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"connect_master.api.send_otp"
+							]
+						},
+						"description": "Sends a 6-digit OTP to the user's email address. If the user doesn't exist, it creates a new system user with the Customer role."
+					},
+					"response": []
+				},
+				{
+					"name": "Verify OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "customer@example.com",
+									"description": "Email address of the user logging in.",
+									"type": "text"
+								},
+								{
+									"key": "otp",
+									"value": "123456",
+									"description": "6-digit verification code received via email.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/method/connect_master.api.verify_otp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"connect_master.api.verify_otp"
+							]
+						},
+						"description": "Verifies the OTP and logs in the user, returning standard session cookies (including `sid`)."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Metadata & Configs",
+			"description": "Endpoints to load initial master data, category, and geographical configurations.",
+			"item": [
+				{
+					"name": "Get User Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/method/connect_master.api.get_user_info",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"connect_master.api.get_user_info"
+							]
+						},
+						"description": "Returns current logged in user's roles and linked Channel Partners (for Partner Admin)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Allowed Territories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/method/connect_master.api.get_allowed_territories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"connect_master.api.get_allowed_territories"
+							]
+						},
+						"description": "Returns territories the current user has access to based on their role (System Manager, Territory Admin, or Partner Admin)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Allowed Service Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/method/connect_master.api.get_allowed_service_categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"connect_master.api.get_allowed_service_categories"
+							]
+						},
+						"description": "Returns Service Channels current user has access to."
+					},
+					"response": []
+				},
+				{
+					"name": "Search Addresses for Punch",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/method/connect_master.api.search_addresses_for_punch?query=Store",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"connect_master.api.search_addresses_for_punch"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "Store",
+									"description": "Search string matching Address titles, names, city, or contact mobile."
+								}
+							]
+						},
+						"description": "Returns lists of addresses classified as 'allowed' or 'restricted' based on the Territory Admin's operating regions."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"description": "Endpoints relating to querying and listing Connect Orders.",
+			"item": [
+				{
+					"name": "Get Compass Orders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/method/connect_master.api.get_compass_orders?tab=Active&start=0&page_len=50",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"connect_master.api.get_compass_orders"
+							],
+							"query": [
+								{
+									"key": "tab",
+									"value": "Active",
+									"description": "Can be: 'Active' (submitted/assigned/accepted), 'Unresolved' (escalated/pushed), or 'History' (fulfilled/cancelled)"
+								},
+								{
+									"key": "start",
+									"value": "0"
+								},
+								{
+									"key": "page_len",
+									"value": "50"
+								},
+								{
+									"key": "filters",
+									"value": "{\"order_status\":\"Submitted\"}",
+									"description": "Optional JSON string containing additional filters.",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "pincode",
+									"description": "Optional search term.",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Fetches filtered and paginated list of Connect Orders matching current user's role permissions and active tab."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Order Counts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/method/connect_master.api.get_order_counts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"connect_master.api.get_order_counts"
+							]
+						},
+						"description": "Returns counts for orders classified in the 'Active', 'Unresolved', and 'History' groups."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Order Lifecycle",
+			"description": "Endpoints to progress order statuses and manage fulfillment.",
+			"item": [
+				{
+					"name": "Assign Channel Partner",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "order_name",
+									"value": "CONNECT-ORD-2026-00001",
+									"type": "text"
+								},
+								{
+									"key": "channel_partner",
+									"value": "Partner Alpha",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/method/connect_master.api.assign_channel_partner",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"connect_master.api.assign_channel_partner"
+							]
+						},
+						"description": "Assigns an order to a localized Channel Partner. Moves status to 'Assigned' and notifies the partner."
+					},
+					"response": []
+				},
+				{
+					"name": "Accept Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "order_name",
+									"value": "CONNECT-ORD-2026-00001",
+									"type": "text"
+								},
+								{
+									"key": "notes",
+									"value": "Acknowledged. Dispatched for delivery.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/method/connect_master.api.accept_order",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"connect_master.api.accept_order"
+							]
+						},
+						"description": "Invoked by Channel Partner to accept the assigned order. Changes status to 'Accepted'."
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "order_name",
+									"value": "CONNECT-ORD-2026-00001",
+									"type": "text"
+								},
+								{
+									"key": "notes",
+									"value": "Out of stock on requested pharma line items.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/method/connect_master.api.reject_order",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"connect_master.api.reject_order"
+							]
+						},
+						"description": "Invoked by Channel Partner to reject the assignment. Clears partner mapping and updates status to 'Rejected'."
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Order Delivered",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "order_name",
+									"value": "CONNECT-ORD-2026-00001",
+									"type": "text"
+								},
+								{
+									"key": "delivery_date",
+									"value": "2026-05-24",
+									"type": "text"
+								},
+								{
+									"key": "delivery_notes",
+									"value": "Delivered successfully, payment collected cash-on-delivery.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/method/connect_master.api.mark_order_delivered",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"connect_master.api.mark_order_delivered"
+							]
+						},
+						"description": "Completes the order workflow by marking it 'Fulfilled' and setting resolution timestamps."
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "order_name",
+									"value": "CONNECT-ORD-2026-00001",
+									"type": "text"
+								},
+								{
+									"key": "notes",
+									"value": "Customer cancelled the request.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/method/connect_master.api.cancel_order",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"connect_master.api.cancel_order"
+							]
+						},
+						"description": "Cancels the order, marking the status as 'Cancelled'."
+					},
+					"response": []
+				},
+				{
+					"name": "Release Territory",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "order_name",
+									"value": "CONNECT-ORD-2026-00001",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/method/connect_master.api.release_territory",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"connect_master.api.release_territory"
+							]
+						},
+						"description": "Escalates the order's resolved territory to its parent-most root territory, resets partner assignment to NULL, and sets status back to 'Submitted'."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Territory",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "order_name",
+									"value": "CONNECT-ORD-2026-00001",
+									"type": "text"
+								},
+								{
+									"key": "new_territory",
+									"value": "600048",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/method/connect_master.api.update_territory",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"connect_master.api.update_territory"
+							]
+						},
+						"description": "Manually updates the address's resolved territory name and appends a timeline change event."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Service Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "order_name",
+									"value": "CONNECT-ORD-2026-00001",
+									"type": "text"
+								},
+								{
+									"key": "new_category",
+									"value": "Pharma",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/method/connect_master.api.update_service_category",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"connect_master.api.update_service_category"
+							]
+						},
+						"description": "Updates both the order service category and delivery address category, logging a timeline event."
+					},
+					"response": []
+				},
+				{
+					"name": "Add Timeline Comment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "order_name",
+									"value": "CONNECT-ORD-2026-00001",
+									"type": "text"
+								},
+								{
+									"key": "comment",
+									"value": "Special instruction: leave package with security guard.",
+									"type": "text"
+								},
+								{
+									"key": "is_internal",
+									"value": "0",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/method/connect_master.api.add_comment",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"connect_master.api.add_comment"
+							]
+						},
+						"description": "Adds a timeline comment/note to the order. Can be flagged as internal."
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://connect.localhost:8000",
+			"type": "string"
+		}
+	]
+}

@@ -153,3 +153,12 @@ List filters and access controls are implemented in `api.py` under `_get_list_co
 | `POST` | `/api/method/connect_master.api.assign_channel_partner` | Assigns a partner to an order and updates the order status to `Assigned`. |
 | `POST` | `/api/method/connect_master.api.release_territory` | Escalates an order's territory to the root ancestor and resets partner assignment. |
 | `POST` | `/api/method/connect_master.api.mark_order_delivered` | Completes the order flow by setting status to `Fulfilled` and recording delivery details. |
+
+---
+
+## 9. API Testing Collection
+
+A complete Postman Collection is available for testing the API workflows of the app:
+* **JSON File**: [connect_master_postman_collection.json](file:///workspace/development/frappe-bench/agenticdocs/skills/connect_master/connect_master_postman_collection.json)
+* Contains pre-configured endpoints for **Authentication** (OTP flows), **Metadata Queries**, **Order Listing**, and the full **Order Lifecycle** transitions.
+
